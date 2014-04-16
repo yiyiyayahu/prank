@@ -11,6 +11,7 @@ import edu.upenn.cis555.url.process.StoreUrlToDatabase;
 public class DataStoreTest {
 
 	public static void main(String[] args) {
+		
 		loadUrlIntoTempDB();
 		//writeUrlLinks();
 		//checkTempDB();

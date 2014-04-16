@@ -13,6 +13,7 @@ import edu.upenn.cis455.storage.DataStore;
 public class UrlLinkTable {
 	List<String> allUrls;
 	DataStore dataStore;
+
 	public void getUrlTable() throws IOException {
 		dataStore = new DataStore("/home/cis455/export/hw2env/");
 		//get all the urls of the data storage

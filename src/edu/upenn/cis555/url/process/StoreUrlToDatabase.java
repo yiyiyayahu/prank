@@ -10,26 +10,25 @@ public class StoreUrlToDatabase {
 	public DataStore dataStore;
 	public DBLoader dbLoader;
 	public boolean Finished;
-	
-	public void store() {
-//		dataStore = new DataStore("/home/cis455/crawledData/");
-//		dbLoader = new DBLoader();
-//		for(String keyUrl : dataStore.getUrlList()) {
-//			System.out.println("keyUrl is ... " + keyUrl);
-//			CrawlRecord crawlRecord = dataStore.getWebPage(keyUrl);
-//			
-//			List<String> outlinks = removeDupsAndSelf(crawlRecord.getOutLinks(), keyUrl);
-//			
-//			System.out.println("and the outlinks are ... " + outlinks);
-//			dbLoader.loadUrlDb(keyUrl, outlinks);
-//			
-//		}
 		
+	public void store() {
+		dataStore = new DataStore("/home/cis455/crawledData/");
 		dbLoader = new DBLoader();
-		dbLoader.deleteFiles();
-		loadSampleData();
+		//dbLoader.deleteFiles();
+		for(String keyUrl : dataStore.getUrlList()) {
+			System.out.println("keyUrl is ... " + keyUrl);
+			CrawlRecord crawlRecord = dataStore.getWebPage(keyUrl);
+			
+			List<String> outlinks = removeDupsAndSelf(crawlRecord.getOutLinks(), keyUrl);
+			dbLoader.loadUrlDb(keyUrl, outlinks);	
+		}
+		
+//		dbLoader = new DBLoader();
+//		dbLoader.deleteFiles();
+//		loadSampleData();
 		updateDB();
 	}
+	
 	
 	//when loading the crawledData into my database, do some processing on the outlinks
 	public void loadSampleData() {
@@ -53,24 +52,35 @@ public class StoreUrlToDatabase {
 			
 		while(!Finished) {
 			List<String> allKeys = dbLoader.getAllKeys();
-			System.out.println("all Keys are ... " + allKeys);
-			for(String keyUrl : allKeys) {
-				System.out.println("the outlinks of key  " + keyUrl + " ...: " + dbLoader.getOutlinksByKey(keyUrl));
-			}
+//			System.out.println("all Keys are ... " + allKeys);
+//			for(String keyUrl : allKeys) {
+//				System.out.println("the outlinks of key  " + keyUrl + " ...: " + dbLoader.getOutlinksByKey(keyUrl));
+//			}
 			for(String keyUrl : allKeys) {
 				List<String> outlinks = removeInvalidUrls(dbLoader.getOutlinksByKey(keyUrl));
 				System.out.println("now the outlinks of key " + keyUrl + " ...: " + outlinks);			
-				if(outlinks == null || outlinks.size() == 0)  {
-					dbLoader.deleteUrlRecord(keyUrl);
-				} else {
+				if(outlinks != null && outlinks.size() > 0)  {
 					dbLoader.loadUrlDb(keyUrl, outlinks);
+				} else {
+					dbLoader.deleteUrlRecord(keyUrl);
+					System.out.println("delete one key: " + keyUrl);
+					Finished = false;
 				}				
 			}
 		}
+//		for(String keyUrl : dbLoader.getAllKeys()) {
+//			List<String> outlinks = dbLoader.getOutlinksByKey(keyUrl);
+//		
+//			if(outlinks == null || outlinks.size() == 0)  {
+//				dbLoader.deleteUrlRecord(keyUrl);
+//				System.out.println("delete one key: " + keyUrl + " outlinks: " + outlinks);
+//			} 				
+//		}
 		System.out.println("all Keys are ... " + dbLoader.getAllKeys());
-		for(String keyUrl : dbLoader.getAllKeys()) {
-			System.out.println("the outlinks of key  " + keyUrl + " ...: " + dbLoader.getOutlinksByKey(keyUrl));
-		}
+		System.out.println("Now the size of the db is ..." + dbLoader.getAllKeys().size());
+//		for(String keyUrl : dbLoader.getAllKeys()) {
+//			System.out.println("the outlinks of key  " + keyUrl + " ...: " + dbLoader.getOutlinksByKey(keyUrl));
+//		}
 		
 	}
 	
@@ -96,6 +106,7 @@ public class StoreUrlToDatabase {
 			if(dbLoader.checkUrlExists(url)) {
 				result.add(url);
 			} else {
+				System.out.println("delete the url of the outlinks: " + url);
 				isChanged = true;
 			}
 		}

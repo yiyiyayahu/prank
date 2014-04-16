@@ -17,7 +17,6 @@ import com.sleepycat.persist.EntityCursor;
 public class DBLoader {
 	private static File myDbsPath = new File("/home/cis455/URLDB/");
 
-    // DatabaseEntries used for loading records
     private static DatabaseEntry key = new DatabaseEntry();
     private static DatabaseEntry data = new DatabaseEntry();
 
@@ -93,17 +92,11 @@ public class DBLoader {
 			        OperationStatus.SUCCESS) {
 				urlList.add(new String(foundKey.getData()));
 			}
+			return urlList;
 		} finally {
 			urlCursor.close();
 		}
-		return urlList;
+
     }
-    
-	public void deleteFiles() {
-		for(String s : myDbsPath.list()) {
-			File file = new File(myDbsPath.getPath(), s);
-			file.delete();
-		}
-	}
 
 }
